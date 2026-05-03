@@ -1,0 +1,6 @@
+node_modules/
+dist/
+config.json
+manifest.json
+ingest.log
+*.lock

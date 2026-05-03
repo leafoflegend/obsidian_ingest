@@ -1,0 +1,19 @@
+{
+  "name": "ingest_to_obsidian",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Daily file ingestion from a source directory into an Obsidian vault",
+  "main": "dist/ingest.js",
+  "scripts": {
+    "build": "tsc",
+    "install-tool": "npm run build && node dist/install.js",
+    "ingest": "npm run build && node dist/ingest.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^22.0.0"
+  }
+}
