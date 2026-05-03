@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync } from "node:fs";
-import { resolve } from "node:path";
+import { isAbsolute, resolve } from "node:path";
 import { saveConfig } from "./lib/config.js";
 import { detectPlatform } from "./lib/platform.js";
 import { installSchedule } from "./lib/scheduler.js";
-import { ask, confirm, closePrompt } from "./lib/prompt.js";
+import { ask, askPath, confirm, closePrompt } from "./lib/prompt.js";
 
 async function main(): Promise<void> {
   console.log("=== Ingest to Obsidian - Setup ===\n");
@@ -12,9 +12,13 @@ async function main(): Promise<void> {
   // Source directory
   let sourceDir = "";
   while (true) {
-    sourceDir = resolve(await ask("Source directory to ingest files from"));
+    sourceDir = await askPath("Source directory to ingest files from (absolute path)");
     if (!sourceDir) {
       console.log("  Please provide a path.");
+      continue;
+    }
+    if (!isAbsolute(sourceDir)) {
+      console.log(`  Path must be absolute: ${sourceDir}`);
       continue;
     }
     if (!existsSync(sourceDir)) {
@@ -31,9 +35,13 @@ async function main(): Promise<void> {
   // Vault directory
   let vaultDir = "";
   while (true) {
-    vaultDir = resolve(await ask("Obsidian vault directory"));
+    vaultDir = await askPath("Obsidian vault directory (absolute path)");
     if (!vaultDir) {
       console.log("  Please provide a path.");
+      continue;
+    }
+    if (!isAbsolute(vaultDir)) {
+      console.log(`  Path must be absolute: ${vaultDir}`);
       continue;
     }
     if (!existsSync(vaultDir)) {
@@ -43,8 +51,8 @@ async function main(): Promise<void> {
     break;
   }
 
-  // Subfolder
-  const subfolder = await ask("Subfolder within vault for ingested files", "Inbox");
+  // Subfolder (relative to vault — quotes stripped in case the user wrapped it)
+  const subfolder = await askPath("Subfolder within vault for ingested files", "Inbox");
 
   // Create subfolder if needed
   const destDir = resolve(vaultDir, subfolder);
